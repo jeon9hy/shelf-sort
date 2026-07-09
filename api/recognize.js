@@ -32,6 +32,24 @@ function getRedis() {
   }
 }
 
+// Vision은 한 문단(paragraph) 안의 낱말들을 단순히 공백으로 이어붙이면 "박25ㅁ" 같은
+// 한 덩어리 청구기호 토큰이 한글/숫자/자모 경계마다 공백이 끼어 "박 25 ㅁ"로 깨진다.
+// 각 symbol이 들고 있는 실제 detectedBreak 정보(진짜 띄어쓰기였는지)를 확인해서,
+// Vision이 스스로 "여기 공백이 있었다"고 판단한 자리에만 공백을 넣는다.
+function extractParagraphText(paragraph) {
+  let text = ''
+  for (const word of paragraph.words ?? []) {
+    for (const symbol of word.symbols ?? []) {
+      text += symbol.text ?? ''
+      const breakType = symbol.property?.detectedBreak?.type
+      if (breakType === 'SPACE' || breakType === 'SURE_SPACE') {
+        text += ' '
+      }
+    }
+  }
+  return text.trim()
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'POST 요청만 지원합니다.' })
@@ -127,10 +145,7 @@ export default async function handler(req, res) {
 
   const boxes = paragraphs
     .map((paragraph) => {
-      const text = (paragraph.words ?? [])
-        .map((word) => (word.symbols ?? []).map((s) => s.text).join(''))
-        .join(' ')
-        .trim()
+      const text = extractParagraphText(paragraph)
       const vertices = paragraph.boundingBox?.vertices ?? []
       const xs = vertices.map((v) => v.x ?? 0)
       const ys = vertices.map((v) => v.y ?? 0)
