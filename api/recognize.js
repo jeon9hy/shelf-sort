@@ -61,13 +61,23 @@ function extractParagraphText(paragraph) {
 // 도서기호 모양 토큰은, 마지막 '0'이 사실 'ㅇ'이었을 가능성이 아주 높다(반대로 진짜
 // 숫자 0으로 끝나는 도서기호는 드물다). 그 경우에만 'ㅇ'으로 보정한다.
 const TRAILING_ZERO_AS_IEUNG_RE = /^([가-힣ㄱ-ㅎ]+\d+)0$/
+const BOOK_NUMBER_NO_WORKLETTER_RE = /^[가-힣ㄱ-ㅎ]+\d+$/
 
 function fixCommonOcrConfusions(text) {
-  // 공백으로 실제 여러 낱말이 붙어있는 경우도 있으니, 낱말 단위로만 보정한다.
-  return text
-    .split(/(\s+)/)
-    .map((part) => (/^\s*$/.test(part) ? part : part.replace(TRAILING_ZERO_AS_IEUNG_RE, '$1ㅇ')))
-    .join('')
+  const words = text.split(/\s+/).filter(Boolean)
+
+  // Vision이 도서기호와 그 뒤의 'ㅇ'(→'0'으로 오인식) 사이에 진짜 공백까지 넣어서
+  // "박883 0"처럼 두 낱말로 떼어놓는 경우도 있다. 마지막 낱말이 외톨이 "0"이고
+  // 바로 앞 낱말이 저작기호 없는 도서기호 모양이면 하나로 합쳐 'ㅇ'을 붙인다.
+  if (words.length >= 2 && words[words.length - 1] === '0') {
+    const prev = words[words.length - 2]
+    if (BOOK_NUMBER_NO_WORKLETTER_RE.test(prev)) {
+      words.splice(words.length - 2, 2, `${prev}ㅇ`)
+    }
+  }
+
+  // 한 낱말 안에서 바로 끝에 붙어 있는 경우("박2830")도 보정한다.
+  return words.map((w) => w.replace(TRAILING_ZERO_AS_IEUNG_RE, '$1ㅇ')).join(' ')
 }
 
 // Vision은 사진에 보이는 모든 글자(책 제목, 저자명, 출판사 로고, 청구기호 라벨, 바코드
