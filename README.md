@@ -1,32 +1,75 @@
-# React + TypeScript + Vite
+# shelf-sort — 서가 오배열 정리
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+도서관 서가의 청구기호 오배열을 스마트폰으로 찾아주는 모바일 웹앱. 서가를 촬영하면
+왼쪽→오른쪽 순서로 청구기호를 인식하고, 올바른 정렬 순서와 비교해 오배열된 책과
+이동할 자리를 알려준다.
 
-Currently, two official plugins are available:
+배포: https://gslib.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 기능
 
-## React Compiler
+1. 카메라 촬영(가이드 프레임 오버레이) 또는 갤러리에서 사진 첨부
+2. 사진 속 청구기호를 왼→오른 순서로 자동 인식 (선택 사항, 꺼도 전 기능 사용 가능)
+3. 인식 결과를 화면에서 직접 수정(추가/삭제/순서 변경) — 오인식 보정용 편집 단계
+4. 정렬 엔진으로 올바른 순서를 계산해 실제 배열과 비교, 오배열 도서 판정
+5. 오배열 도서마다 "N번 자리로 이동" 또는 "다른 구간으로 이동" 안내
+6. 촬영한 사진을 결과 화면에 함께 표시
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 청구기호 구조 및 정렬 규칙
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```
+[별치기호] 분류기호 도서기호 [부가기호]
+예) 004.73 박25ㅇ  /  아 843.5 23ㅇ v.2  /  004.73 박883ㅇ v.2026  /  004.73 반44초 c.2
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+정렬은 별치기호 → 분류기호(정수부는 자연수 비교, 소수부는 소수 크기 비교) → 도서기호
+앞 한글(자모 순) → 도서기호 숫자(★자연수가 아니라 소수 자리처럼 사전식 비교★) → 도서기호
+뒤 한글(자모 순) → 부가기호(자연수 비교) 순서로 비교한다. 이 규칙은 `src/domain/`의 순수
+함수로 구현되어 있고, 인식(OCR) 정확도와 완전히 무관하게 동작한다 — 인식을 꺼도 수동
+입력만으로 정렬·오배열 판정 기능이 그대로 작동한다.
+
+## 아키텍처
+
+- **`src/domain/`** — 파싱(`parse.ts`), 한글 자모 비교(`hangul.ts`), 정렬 비교자(`compare.ts`),
+  오배열 판정(`misplacement.ts`, LIS 기반). 전부 순수 함수이며 유닛 테스트(`*.test.ts`)로
+  검증되어 있다.
+- **`src/components/`** — 촬영(`CaptureView`, `GuideOverlay`), 편집(`EditList`), 결과
+  (`ResultView`), 설정(`Settings`) 화면.
+- **`src/ocr/`** — 인식 클라이언트(`remoteOcrProvider.ts`)는 이미지를 축소한 뒤 자체 API
+  (`/api/recognize`)로 보내기만 하고, 어떤 비전 모델을 쓰는지는 모른다.
+- **`api/recognize.js`** — Vercel 서버리스 함수. Gemini Flash 비전 모델에 이미지+프롬프트를
+  보내 "청구기호 라벨만 왼→오른 순서로 읽어 JSON 배열로" 추출한다(책 제목·저자명·바코드는
+  프롬프트로 걸러냄). API 키는 서버에만 있고 브라우저로 노출되지 않는다. Upstash Redis가
+  연결되어 있으면 일일 사용량을 세어 무료 한도 근처에서 자동으로 인식을 중단하고 수동 입력을
+  안내한다.
+
+## 개발 시작하기
+
+```bash
+npm install
+npm run dev       # http://localhost:5173
+```
+
+카메라(`getUserMedia`)는 `localhost`나 HTTPS에서만 동작한다. 휴대폰으로 카메라까지
+테스트하려면 배포하거나 ngrok 등으로 HTTPS 터널을 열어야 한다.
+
+### 테스트 / 빌드 / 린트
+
+```bash
+npx vitest run   # 도메인 로직 유닛 테스트
+npm run build    # 타입체크 + 프로덕션 빌드
+npm run lint     # oxlint
+```
+
+## 배포 (Vercel)
+
+정적 프론트엔드 + `api/` 서버리스 함수 구조라 Vercel에 그대로 배포하면 된다. 인식
+기능을 쓰려면 프로젝트 환경변수에 아래 값을 등록해야 한다(값 없이 배포해도 앱은
+정상 동작하며, 이 경우 자동 인식만 꺼지고 수동 입력으로 대체된다).
+
+| 환경변수 | 설명 |
+| --- | --- |
+| `GEMINI_API_KEY` | [Google AI Studio](https://aistudio.google.com/apikey)에서 발급. 결제 계정 미연결 프로젝트로 발급하면 카드 등록 없이 무료 등급(분당 15회) 사용 가능 |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | (선택) 일일 인식 사용량 카운터용. Vercel Storage 탭에서 Upstash Redis를 연결하면 자동 주입되며, 없으면 사용량 제한 없이 그냥 동작한다 |
+
+자세한 값은 `.env.example` 참고.
