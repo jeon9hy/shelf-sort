@@ -50,6 +50,34 @@ function extractParagraphText(paragraph) {
   return text.trim()
 }
 
+// Vision은 사진에 보이는 모든 글자(책 제목, 저자명, 출판사 로고, 청구기호 라벨, 바코드
+// 숫자 스티커까지)를 다 읽어온다. 우리가 원하는 건 청구기호 라벨뿐이므로, 청구기호
+// 구성요소(parse.ts의 파싱 규칙과 동일한 모양)처럼 생긴 텍스트만 남기고 나머지는
+// 버린다 — 책 제목/저자명은 이 좁은 정규식들과 우연히 겹치지 않는다.
+const CLASSIFICATION_TOKEN_RE = /^\d{3}(?:\.\d+)?$/ // 분류기호는 항상 3자리(예: 004, 843.5)
+const BOOK_NUMBER_TOKEN_RE = /^[가-힣ㄱ-ㅎ]+\d+[가-힣ㄱ-ㅎ]*$/
+const SUPPLEMENT_VC_TOKEN_RE = /^[vc]\.\d+$/i
+const SUPPLEMENT_YEAR_TOKEN_RE = /^\d{4}$/
+const PREFIX_TOKEN_RE = /^[가-힣]{1,4}$/
+
+function looksLikeCallNumberToken(token, y0, imageHeight) {
+  if (CLASSIFICATION_TOKEN_RE.test(token)) return true
+  if (BOOK_NUMBER_TOKEN_RE.test(token)) return true
+  if (SUPPLEMENT_VC_TOKEN_RE.test(token)) return true
+  if (SUPPLEMENT_YEAR_TOKEN_RE.test(token)) return true
+  if (PREFIX_TOKEN_RE.test(token)) {
+    // 짧은 한글 조각(별치기호 모양)은 책 제목의 일부일 수도 있으니, 라벨이 보통
+    // 붙는 서가 사진 아래쪽 절반에 있을 때만 인정한다(모양만으로는 구분 불가).
+    return imageHeight == null || y0 >= imageHeight * 0.5
+  }
+  return false
+}
+
+function isCallNumberLikeBox(text, y0, imageHeight) {
+  const words = text.split(/\s+/).filter(Boolean)
+  return words.length > 0 && words.every((w) => looksLikeCallNumberToken(w, y0, imageHeight))
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'POST 요청만 지원합니다.' })
@@ -139,9 +167,9 @@ export default async function handler(req, res) {
     }
   }
 
-  const paragraphs = (result?.fullTextAnnotation?.pages ?? [])
-    .flatMap((page) => page.blocks ?? [])
-    .flatMap((block) => block.paragraphs ?? [])
+  const pages = result?.fullTextAnnotation?.pages ?? []
+  const imageHeight = pages[0]?.height ?? null
+  const paragraphs = pages.flatMap((page) => page.blocks ?? []).flatMap((block) => block.paragraphs ?? [])
 
   const boxes = paragraphs
     .map((paragraph) => {
@@ -153,6 +181,7 @@ export default async function handler(req, res) {
       return { text, x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys) }
     })
     .filter((box) => box !== null)
+    .filter((box) => isCallNumberLikeBox(box.text, box.y0, imageHeight))
 
   res.status(200).json({ boxes })
 }
