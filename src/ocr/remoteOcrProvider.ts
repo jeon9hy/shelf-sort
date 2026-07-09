@@ -44,6 +44,7 @@ interface RecognizeApiResponse {
 
 interface RecognizeApiError {
   error: string
+  quotaExceeded?: boolean
 }
 
 export class RemoteOcrProvider implements OcrProvider {
@@ -64,7 +65,10 @@ export class RemoteOcrProvider implements OcrProvider {
 
     if (!response.ok) {
       const body = (await response.json().catch(() => null)) as RecognizeApiError | null
-      throw new OcrError(body?.error ?? `인식 요청이 실패했습니다 (${response.status}).`)
+      throw new OcrError(
+        body?.error ?? `인식 요청이 실패했습니다 (${response.status}).`,
+        body?.quotaExceeded ?? false,
+      )
     }
 
     const data = (await response.json()) as RecognizeApiResponse

@@ -8,4 +8,12 @@ export interface OcrProvider {
   recognize(imageDataUrl: string): Promise<OcrResult>
 }
 
-export class OcrError extends Error {}
+export class OcrError extends Error {
+  /** 서버가 이번 달 무료 인식 사용량 한도를 넘겨 요청을 거부했을 때 true. */
+  quotaExceeded: boolean
+
+  constructor(message: string, quotaExceeded = false) {
+    super(message)
+    this.quotaExceeded = quotaExceeded
+  }
+}

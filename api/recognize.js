@@ -1,12 +1,36 @@
+import { Redis } from '@upstash/redis'
+
 // Vercel Serverless Function: 프론트에서는 이 엔드포인트만 호출한다. 실제 Google
 // Cloud Vision 호출과 API 키는 여기(서버)에만 있고 브라우저로는 절대 나가지 않는다.
 //
 // 필요한 환경변수 (Vercel 프로젝트 설정 > Environment Variables):
-//   GOOGLE_VISION_API_KEY - Google Cloud 프로젝트에서 발급한 Vision API 키
+//   GOOGLE_VISION_API_KEY  - Google Cloud 프로젝트에서 발급한 Vision API 키
+//   UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN
+//     - Vercel Marketplace의 Upstash Redis 연동을 프로젝트에 추가하면 자동 주입됨.
+//       (Storage 탭 > Redis 검색 > 이 프로젝트에 Connect)
+//       이 두 값이 없으면 사용량 집계 없이(한도 체크 없이) 그냥 동작한다 — 무료
+//       한도를 넘겨서 과금될 수 있으니, 실제 서비스에선 꼭 연결해 둘 것.
 //
-// DOCUMENT_TEXT_DETECTION의 문단(paragraph) 단위 결과를 좌표 박스 배열로 정리해
-// 돌려주고, "같은 책 라벨끼리 묶어 정렬"하는 작업은 프론트(src/ocr/clusterLines.ts)
-// 에서 한다 — 이 함수는 Vision 응답을 얇게 프록시/정리만 한다.
+// Google Vision 무료 한도(월 1,000건)를 안전 마진을 두고 950건에서 끊는다:
+// 그 달의 요청 수를 세다가 950건을 넘으면 Vision을 아예 호출하지 않고 바로
+// "이번 달 무료 사용량 소진, 수동 입력" 에러를 돌려준다.
+
+const FREE_QUOTA_LIMIT = 950
+const USAGE_KEY_TTL_SECONDS = 35 * 24 * 3600 // 다음 달 키가 새로 시작되므로 여유 있게 정리
+
+function currentMonthUsageKey() {
+  const now = new Date()
+  return `vision-ocr-usage:${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`
+}
+
+function getRedis() {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null
+  try {
+    return Redis.fromEnv()
+  } catch {
+    return null
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -27,6 +51,25 @@ export default async function handler(req, res) {
   if (!image) {
     res.status(400).json({ error: 'image(base64) 값이 필요합니다.' })
     return
+  }
+
+  const redis = getRedis()
+  const usageKey = currentMonthUsageKey()
+
+  if (redis) {
+    let usedCount = 0
+    try {
+      usedCount = Number((await redis.get(usageKey)) ?? 0)
+    } catch {
+      usedCount = 0
+    }
+    if (usedCount >= FREE_QUOTA_LIMIT) {
+      res.status(429).json({
+        error: `이번 달 무료 인식 사용량(${FREE_QUOTA_LIMIT}회)을 다 썼습니다. 다음 달까지 자동 인식을 쉬고, 청구기호를 직접 입력해 주세요.`,
+        quotaExceeded: true,
+      })
+      return
+    }
   }
 
   const payload = {
@@ -66,6 +109,16 @@ export default async function handler(req, res) {
   if (result?.error) {
     res.status(502).json({ error: `Google Vision 오류: ${result.error.message ?? '알 수 없는 오류'}` })
     return
+  }
+
+  // Vision 호출이 실제로 성공했을 때만 사용량을 센다(과금 단위와 일치시키기 위해).
+  if (redis) {
+    try {
+      const newCount = await redis.incr(usageKey)
+      if (newCount === 1) await redis.expire(usageKey, USAGE_KEY_TTL_SECONDS)
+    } catch {
+      // 카운팅 실패는 요청 자체를 실패시키지 않는다.
+    }
   }
 
   const paragraphs = (result?.fullTextAnnotation?.pages ?? [])
