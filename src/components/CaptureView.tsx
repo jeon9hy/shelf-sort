@@ -10,7 +10,8 @@ interface CaptureViewProps {
  * getUserMedia를 쓸 수 없는 환경(권한 거부, 미지원 브라우저)을 위해
  * <input type="file" accept="image/*">로 갤러리 첨부 fallback도 항상 제공한다
  * (capture 속성을 넣지 않아야 모바일에서 카메라가 아닌 사진 보관함이 열린다).
- * 촬영/갤러리 버튼은 카메라 화면 위에 떠 있는 실제 카메라 앱 느낌의 오버레이로 배치한다.
+ * 촬영 버튼은 카메라 화면 위에 떠 있는 셔터로, 갤러리 첨부는 카메라 밖 별도
+ * 버튼으로 분리해 둘을 헷갈리지 않게 한다.
  */
 export function CaptureView({ onCapture }: CaptureViewProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -90,12 +91,6 @@ export function CaptureView({ onCapture }: CaptureViewProps) {
         )}
         <GuideOverlay />
         <div className="camera-controls">
-          <label className="gallery-button file-label" aria-label="갤러리에서 선택">
-            <span className="gallery-button-icon" aria-hidden="true">
-              🖼️
-            </span>
-            <input type="file" accept="image/*" onChange={onFilePicked} hidden />
-          </label>
           <button
             type="button"
             className="shutter-button"
@@ -105,10 +100,18 @@ export function CaptureView({ onCapture }: CaptureViewProps) {
           >
             <span className="shutter-button-ring" />
           </button>
-          <div className="camera-controls-spacer" aria-hidden="true" />
         </div>
       </div>
       <p className="capture-hint">청구기호 라벨 줄이 가운데 가이드 선에 맞도록 서가를 정면에서 촬영하세요.</p>
+      <div className="gallery-row">
+        <label className="gallery-button file-label">
+          <span className="gallery-button-icon" aria-hidden="true">
+            🖼️
+          </span>
+          갤러리에서 선택
+          <input type="file" accept="image/*" onChange={onFilePicked} hidden />
+        </label>
+      </div>
     </div>
   )
 }

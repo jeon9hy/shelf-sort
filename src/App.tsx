@@ -52,7 +52,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="app-header">
-        <h1>서가 오배열 정리</h1>
+        <h1>SHELFY</h1>
         <button
           type="button"
           className="icon-button"
