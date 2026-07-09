@@ -1,17 +1,28 @@
 :root {
-  --text: #374151;
-  --text-h: #111827;
-  --bg: #f3f4f6;
+  --text: #5b5470;
+  --text-h: #241f36;
+  --bg: #f6f3fb;
+  --bg-gradient: linear-gradient(180deg, #f8f5ff 0%, #f1ecfb 45%, #ece4fa 100%);
   --surface: #ffffff;
-  --border: #e5e7eb;
-  --accent: #2563eb;
+  --surface-alt: #f3edfd;
+  --border: #e7ddf8;
+  --accent: #8b5cf6;
+  --accent-2: #a78bfa;
+  --accent-soft: #ede7fb;
   --accent-contrast: #ffffff;
-  --danger: #dc2626;
-  --danger-bg: #fee2e2;
-  --ok: #16a34a;
-  --ok-bg: #dcfce7;
+  --danger: #e0559c;
+  --danger-bg: #fce6f1;
+  --ok: #35b88a;
+  --ok-bg: #dff6ec;
+  --shadow-color: 260 40% 60%;
 
-  font: 16px/1.5 system-ui, 'Segoe UI', Roboto, sans-serif;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  font:
+    16px/1.55 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, 'Segoe UI', Roboto, sans-serif;
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -23,16 +34,22 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #d1d5db;
-    --text-h: #f9fafb;
-    --bg: #111827;
-    --surface: #1f2937;
-    --border: #374151;
-    --accent: #3b82f6;
-    --danger: #f87171;
-    --danger-bg: #3f1d1d;
-    --ok: #4ade80;
-    --ok-bg: #123d24;
+    --text: #c9c2de;
+    --text-h: #f3effc;
+    --bg: #17131f;
+    --bg-gradient: linear-gradient(180deg, #1c1728 0%, #191424 45%, #150f1e 100%);
+    --surface: #221c30;
+    --surface-alt: #2a2239;
+    --border: #362c49;
+    --accent: #a78bfa;
+    --accent-2: #c4b5fd;
+    --accent-soft: #322851;
+    --accent-contrast: #1c1428;
+    --danger: #f27db0;
+    --danger-bg: #3a2032;
+    --ok: #5fd6a8;
+    --ok-bg: #1b3a30;
+    --shadow-color: 260 60% 4%;
   }
 }
 
@@ -42,6 +59,8 @@
 
 body {
   margin: 0;
+  background: var(--bg-gradient);
+  min-height: 100svh;
 }
 
 #root {
@@ -52,7 +71,8 @@ body {
 
 h1,
 h2 {
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--text-h);
 }
 
