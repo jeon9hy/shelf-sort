@@ -4,7 +4,7 @@ import { CaptureView } from './components/CaptureView'
 import { EditList } from './components/EditList'
 import { ResultView } from './components/ResultView'
 import { Settings } from './components/Settings'
-import { ClovaOcrProvider } from './ocr/clovaOcrProvider'
+import { RemoteOcrProvider } from './ocr/remoteOcrProvider'
 import { isOcrEnabled } from './ocr/settings'
 
 type Step = 'capture' | 'edit' | 'result'
@@ -26,7 +26,7 @@ function App() {
     if (!isOcrEnabled()) return
 
     setOcrLoading(true)
-    const provider = new ClovaOcrProvider()
+    const provider = new RemoteOcrProvider()
     provider
       .recognize(dataUrl)
       .then((result) => {

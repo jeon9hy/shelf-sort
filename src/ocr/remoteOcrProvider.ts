@@ -1,10 +1,10 @@
 import { clusterIntoLabels, type TextBox } from './clusterLines'
 import { OcrError, type OcrProvider, type OcrResult } from './types'
 
-// 옵션 (B): 네이버 CLOVA OCR. 시크릿 키를 브라우저에 노출하지 않기 위해 이 프론트는
-// 이미지를 우리 서버(Vercel Serverless Function, /api/recognize)로만 보내고, 그
-// 함수가 CLOVA_OCR_INVOKE_URL / CLOVA_OCR_SECRET_KEY 환경변수로 실제 CLOVA API를
-// 대신 호출한다. 프론트는 CLOVA의 존재 자체를 모른다 — 그냥 자체 API를 부른다.
+// 옵션 (A) 변형: Google Cloud Vision OCR. API 키를 브라우저에 노출하지 않기 위해
+// 이 프론트는 이미지를 우리 서버(Vercel Serverless Function, /api/recognize)로만
+// 보내고, 그 함수가 GOOGLE_VISION_API_KEY 환경변수로 실제 Vision API를 대신
+// 호출한다. 프론트는 어떤 OCR 엔진을 쓰는지 모른다 — 그냥 자체 API를 부른다.
 
 const MAX_DIMENSION = 2000
 const JPEG_QUALITY = 0.85
@@ -46,7 +46,7 @@ interface RecognizeApiError {
   error: string
 }
 
-export class ClovaOcrProvider implements OcrProvider {
+export class RemoteOcrProvider implements OcrProvider {
   async recognize(imageDataUrl: string): Promise<OcrResult> {
     const resized = await resizeDataUrl(imageDataUrl)
     const { format, base64 } = splitDataUrl(resized)

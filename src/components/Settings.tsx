@@ -22,8 +22,8 @@ export function Settings({ onClose }: SettingsProps) {
           촬영 시 자동으로 청구기호 인식 시도
         </label>
         <p className="settings-warning">
-          인식은 이 앱의 서버(CLOVA OCR 연동)에서 처리되며, 별도 키 입력 없이 바로 사용할 수
-          있습니다. 다만 작은 글씨나 세로로 쌓인 라벨은 오인식될 수 있어, 다음 편집 단계에서 꼭
+          인식은 이 앱의 서버(Google Vision OCR 연동)에서 처리되며, 별도 키 입력 없이 바로
+          사용할 수 있습니다. 다만 작은 글씨나 세로로 쌓인 라벨은 오인식될 수 있어, 다음 편집 단계에서 꼭
           확인해 고쳐 주세요. 꺼두면 바로 수동 입력 화면으로 넘어갑니다.
         </p>
         <div className="capture-actions">
