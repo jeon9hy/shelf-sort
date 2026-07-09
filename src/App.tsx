@@ -4,8 +4,8 @@ import { CaptureView } from './components/CaptureView'
 import { EditList } from './components/EditList'
 import { ResultView } from './components/ResultView'
 import { Settings } from './components/Settings'
-import { ClaudeVisionProvider } from './ocr/claudeVision'
-import { getStoredApiKey, isOcrEnabled } from './ocr/settings'
+import { TesseractOcrProvider } from './ocr/tesseractProvider'
+import { isOcrEnabled } from './ocr/settings'
 
 type Step = 'capture' | 'edit' | 'result'
 
@@ -24,14 +24,9 @@ function App() {
     setStep('edit')
 
     if (!isOcrEnabled()) return
-    const apiKey = getStoredApiKey()
-    if (!apiKey) {
-      setOcrError('OCR API 키가 설정되지 않았습니다.')
-      return
-    }
 
     setOcrLoading(true)
-    const provider = new ClaudeVisionProvider(apiKey)
+    const provider = new TesseractOcrProvider()
     provider
       .recognize(dataUrl)
       .then((result) => {

@@ -1,17 +1,9 @@
-const API_KEY_STORAGE_KEY = 'shelf-sort:claude-api-key'
 const ENABLED_STORAGE_KEY = 'shelf-sort:ocr-enabled'
 
-export function getStoredApiKey(): string {
-  return localStorage.getItem(API_KEY_STORAGE_KEY) ?? ''
-}
-
-export function setStoredApiKey(key: string): void {
-  if (key) localStorage.setItem(API_KEY_STORAGE_KEY, key)
-  else localStorage.removeItem(API_KEY_STORAGE_KEY)
-}
-
+/** 인식은 브라우저 내장 Tesseract.js로 동작하며 API 키/토큰이 필요 없어 기본값은 켜짐이다. */
 export function isOcrEnabled(): boolean {
-  return localStorage.getItem(ENABLED_STORAGE_KEY) === '1'
+  const stored = localStorage.getItem(ENABLED_STORAGE_KEY)
+  return stored === null ? true : stored === '1'
 }
 
 export function setOcrEnabled(enabled: boolean): void {
