@@ -191,6 +191,17 @@ export default async function handler(req, res) {
   const imageHeight = pages[0]?.height ?? null
   const paragraphs = pages.flatMap((page) => page.blocks ?? []).flatMap((block) => block.paragraphs ?? [])
 
+  if (body.debug === true) {
+    res.status(200).json({
+      debugParagraphs: paragraphs.map((p) => ({
+        rawText: extractParagraphText(p),
+        fixedText: fixCommonOcrConfusions(extractParagraphText(p)),
+        keptByFilter: isCallNumberLikeBox(fixCommonOcrConfusions(extractParagraphText(p)), Math.min(...(p.boundingBox?.vertices ?? []).map((v) => v.y ?? 0)), imageHeight),
+      })),
+    })
+    return
+  }
+
   const boxes = paragraphs
     .map((paragraph) => {
       const text = fixCommonOcrConfusions(extractParagraphText(paragraph))
