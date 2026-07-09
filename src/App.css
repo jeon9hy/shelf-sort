@@ -1,0 +1,414 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+  background: var(--bg);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.app-header h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.icon-button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.app-main {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Buttons */
+
+.primary-button,
+.secondary-button {
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  cursor: pointer;
+  flex: 1;
+  text-align: center;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondary-button {
+  background: var(--surface);
+  color: var(--text-h);
+  border-color: var(--border);
+}
+
+.file-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.capture-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Capture view */
+
+.capture-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.camera-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f3f4f6;
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.capture-hint {
+  font-size: 14px;
+  color: var(--text);
+}
+
+/* Guide overlay */
+
+.guide-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.guide-frame {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 20%;
+  bottom: 20%;
+}
+
+.guide-corner {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-color: #ffffffcc;
+}
+
+.corner-tl {
+  top: -2px;
+  left: -2px;
+  border-top: 3px solid;
+  border-left: 3px solid;
+}
+
+.corner-tr {
+  top: -2px;
+  right: -2px;
+  border-top: 3px solid;
+  border-right: 3px solid;
+}
+
+.corner-bl {
+  bottom: -2px;
+  left: -2px;
+  border-bottom: 3px solid;
+  border-left: 3px solid;
+}
+
+.corner-br {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 3px solid;
+  border-right: 3px solid;
+}
+
+.guide-line {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  height: 0;
+  border-top: 1.5px dashed #ffffff99;
+}
+
+.guide-line-main {
+  border-top: 2px dashed #facc15;
+}
+
+/* Edit view */
+
+.edit-view,
+.result-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-thumb {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.status-line {
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.status-error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger);
+}
+
+.edit-hint,
+.empty-hint {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.edit-rows,
+.result-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edit-row,
+.result-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.edit-row.issue {
+  border-color: var(--danger);
+}
+
+.row-main {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.row-index {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.row-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.row-controls {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
+.row-controls button {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.row-controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.row-issue-note {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--danger);
+}
+
+.add-row-button {
+  align-self: flex-start;
+}
+
+/* Result view */
+
+.result-summary {
+  font-size: 14px;
+}
+
+.result-row.bad {
+  border-color: var(--danger);
+}
+
+.row-text {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-h);
+  word-break: break-word;
+}
+
+.badge {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.badge-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.badge-bad {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.move-note {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+/* Settings modal */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 20;
+}
+
+.settings-panel {
+  background: var(--surface);
+  color: var(--text);
+  width: 100%;
+  max-width: 640px;
+  border-radius: 16px 16px 0 0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-panel h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.settings-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.settings-field input {
+  font-weight: 400;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.settings-warning {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.5;
+}
