@@ -36,13 +36,19 @@ function getRedis() {
 // 한 덩어리 청구기호 토큰이 한글/숫자/자모 경계마다 공백이 끼어 "박 25 ㅁ"로 깨진다.
 // 각 symbol이 들고 있는 실제 detectedBreak 정보(진짜 띄어쓰기였는지)를 확인해서,
 // Vision이 스스로 "여기 공백이 있었다"고 판단한 자리에만 공백을 넣는다.
+// 공백 취급해야 하는 detectedBreak 종류. HYPHEN(줄바꿈 시 하이픈으로 이어붙임)만
+// 제외 — 그 외(SPACE/SURE_SPACE/줄 경계 EOL_SURE_SPACE/LINE_BREAK)는 전부 실제
+// 분리로 취급한다. Vision이 라벨의 두 줄(분류기호/도서기호)을 하나의 문단으로 묶어
+// 버릴 때가 있는데, 그 경계는 SPACE가 아니라 LINE_BREAK 계열로 표시되기 때문이다.
+const SPACE_WORTHY_BREAK_TYPES = new Set(['SPACE', 'SURE_SPACE', 'EOL_SURE_SPACE', 'LINE_BREAK'])
+
 function extractParagraphText(paragraph) {
   let text = ''
   for (const word of paragraph.words ?? []) {
     for (const symbol of word.symbols ?? []) {
       text += symbol.text ?? ''
       const breakType = symbol.property?.detectedBreak?.type
-      if (breakType === 'SPACE' || breakType === 'SURE_SPACE') {
+      if (SPACE_WORTHY_BREAK_TYPES.has(breakType)) {
         text += ' '
       }
     }
