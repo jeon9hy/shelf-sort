@@ -50,6 +50,20 @@ function extractParagraphText(paragraph) {
   return text.trim()
 }
 
+// 도서기호 저작기호로 흔히 쓰이는 동그란 자모 'ㅇ'과 숫자 '0'은 모양이 거의 똑같아서
+// Vision이 자주 혼동한다. "앞한글+숫자...+0"으로 끝나고 그 뒤에 한글이 하나도 없는
+// 도서기호 모양 토큰은, 마지막 '0'이 사실 'ㅇ'이었을 가능성이 아주 높다(반대로 진짜
+// 숫자 0으로 끝나는 도서기호는 드물다). 그 경우에만 'ㅇ'으로 보정한다.
+const TRAILING_ZERO_AS_IEUNG_RE = /^([가-힣ㄱ-ㅎ]+\d+)0$/
+
+function fixCommonOcrConfusions(text) {
+  // 공백으로 실제 여러 낱말이 붙어있는 경우도 있으니, 낱말 단위로만 보정한다.
+  return text
+    .split(/(\s+)/)
+    .map((part) => (/^\s*$/.test(part) ? part : part.replace(TRAILING_ZERO_AS_IEUNG_RE, '$1ㅇ')))
+    .join('')
+}
+
 // Vision은 사진에 보이는 모든 글자(책 제목, 저자명, 출판사 로고, 청구기호 라벨, 바코드
 // 숫자 스티커까지)를 다 읽어온다. 우리가 원하는 건 청구기호 라벨뿐이므로, 청구기호
 // 구성요소(parse.ts의 파싱 규칙과 동일한 모양)처럼 생긴 텍스트만 남기고 나머지는
@@ -173,7 +187,7 @@ export default async function handler(req, res) {
 
   const boxes = paragraphs
     .map((paragraph) => {
-      const text = extractParagraphText(paragraph)
+      const text = fixCommonOcrConfusions(extractParagraphText(paragraph))
       const vertices = paragraph.boundingBox?.vertices ?? []
       const xs = vertices.map((v) => v.x ?? 0)
       const ys = vertices.map((v) => v.y ?? 0)
