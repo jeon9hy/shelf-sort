@@ -50,9 +50,56 @@
   transform: scale(0.92);
 }
 
+/* Step indicator */
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px 0;
+  position: sticky;
+  top: 70px;
+  z-index: 4;
+}
+
+.step-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  min-width: 26px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  transition: min-width 0.25s ease, padding 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+.step-dot-upcoming {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  opacity: 0.7;
+}
+
+.step-dot-done {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.step-dot-active {
+  min-width: 60px;
+  padding: 0 14px;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+  color: var(--accent-contrast);
+  font-size: 12px;
+  box-shadow: 0 8px 18px -8px hsl(var(--shadow-color) / 0.6);
+}
+
 .app-main {
   flex: 1;
-  padding: 18px 16px 32px;
+  padding: 16px 16px 32px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -105,9 +152,22 @@
   justify-content: center;
 }
 
+/* 편집/결과 화면 하단에 고정되는 액션바 (엄지로 바로 누르기 좋은 위치) */
 .capture-actions {
   display: flex;
   gap: 10px;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 auto;
+  max-width: 640px;
+  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--border);
+  z-index: 8;
 }
 
 /* Capture view */
@@ -121,7 +181,7 @@
 .camera-frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   background: #14101d;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -149,6 +209,71 @@
 .capture-hint {
   font-size: 14px;
   color: var(--text);
+}
+
+/* 카메라 화면 위에 떠 있는 셔터/갤러리 컨트롤 — 실제 카메라 앱 느낌 */
+.camera-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 26px calc(20px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, transparent 0%, rgba(12, 7, 22, 0.6) 70%);
+}
+
+.gallery-button {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: transform 0.12s ease;
+}
+
+.gallery-button:active {
+  transform: scale(0.92);
+}
+
+.shutter-button {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3.5px solid #ffffff;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+
+.shutter-button:active {
+  transform: scale(0.94);
+}
+
+.shutter-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.shutter-button-ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+}
+
+.camera-controls-spacer {
+  width: 46px;
+  height: 46px;
 }
 
 /* Guide overlay */
@@ -215,23 +340,24 @@
 }
 
 .guide-line-main {
-  border-top: 2px dashed #d6a9ff;
+  border-top: 2px dashed #facc15;
 }
 
-/* Edit view */
+/* Edit / Result view */
 
 .edit-view,
 .result-view {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  padding-bottom: 84px; /* 하단 고정 액션바에 가리지 않도록 */
 }
 
 .edit-thumb {
   width: 100%;
+  aspect-ratio: 4 / 3;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  max-height: 220px;
   object-fit: cover;
   box-shadow: 0 12px 28px -14px hsl(var(--shadow-color) / 0.45);
 }
@@ -266,8 +392,7 @@
   gap: 10px;
 }
 
-.edit-row,
-.result-row {
+.edit-row {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -321,28 +446,52 @@
 
 .row-controls {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
   flex: 0 0 auto;
 }
 
-.row-controls button {
+.reorder-stepper {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--accent-soft);
+}
+
+.reorder-stepper button {
+  width: 26px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--accent);
+  font-size: 9px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.reorder-stepper button:active {
+  background: var(--border);
+}
+
+.reorder-stepper button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.delete-button {
   width: 30px;
   height: 30px;
   border-radius: 999px;
   border: none;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--danger-bg);
+  color: var(--danger);
   cursor: pointer;
-  transition: transform 0.12s ease, background 0.15s ease;
+  transition: transform 0.12s ease;
 }
 
-.row-controls button:active {
+.delete-button:active {
   transform: scale(0.9);
-}
-
-.row-controls button:disabled {
-  opacity: 0.35;
-  cursor: not-allowed;
 }
 
 .row-issue-note {
@@ -357,17 +506,89 @@
 
 /* Result view */
 
-.result-summary {
-  font-size: 14px;
+.stat-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 8px;
+  box-shadow: 0 12px 28px -16px hsl(var(--shadow-color) / 0.45);
 }
 
-.result-summary strong {
-  color: var(--accent);
+.stat-block {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-h);
+}
+
+.stat-value-ok {
+  color: var(--ok);
+}
+
+.stat-value-bad {
+  color: var(--danger);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.stat-divider {
+  width: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.result-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  box-shadow: 0 6px 16px -12px hsl(var(--shadow-color) / 0.4);
+}
+
+.result-row.ok {
+  border-left-color: var(--ok);
 }
 
 .result-row.bad {
-  border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger-bg) 40%, var(--surface));
+  border-left-color: var(--danger);
+}
+
+.status-dot {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-dot-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.status-dot-bad {
+  background: var(--danger-bg);
+  color: var(--danger);
 }
 
 .row-text {
@@ -376,24 +597,6 @@
   font-weight: 700;
   color: var(--text-h);
   word-break: break-word;
-}
-
-.badge {
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 800;
-  padding: 4px 10px;
-  border-radius: 999px;
-}
-
-.badge-ok {
-  background: var(--ok-bg);
-  color: var(--ok);
-}
-
-.badge-bad {
-  background: var(--danger-bg);
-  color: var(--danger);
 }
 
 .move-note {

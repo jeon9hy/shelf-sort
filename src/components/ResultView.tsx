@@ -17,13 +17,29 @@ export function ResultView({ items, photoDataUrl, onRestart, onBackToEdit }: Res
   const parsed = items.map(parseCallNumber)
   const { inPlace, moves } = computeMisplacement(parsed)
   const moveByIndex = new Map(moves.map((m) => [m.index, m]))
+  const okCount = items.length - moves.length
 
   return (
     <div className="result-view">
       <img className="edit-thumb" src={photoDataUrl} alt="촬영한 서가 사진" />
-      <p className="result-summary">
-        총 {items.length}권 중 <strong>{moves.length}권</strong>이 오배열로 확인되었습니다.
-      </p>
+
+      <div className="stat-card">
+        <div className="stat-block">
+          <span className="stat-value">{items.length}</span>
+          <span className="stat-label">전체</span>
+        </div>
+        <div className="stat-divider" aria-hidden="true" />
+        <div className="stat-block">
+          <span className="stat-value stat-value-ok">{okCount}</span>
+          <span className="stat-label">제자리</span>
+        </div>
+        <div className="stat-divider" aria-hidden="true" />
+        <div className="stat-block">
+          <span className="stat-value stat-value-bad">{moves.length}</span>
+          <span className="stat-label">오배열</span>
+        </div>
+      </div>
+
       <ol className="result-rows">
         {parsed.map((p, i) => {
           const move = moveByIndex.get(i)
@@ -31,9 +47,11 @@ export function ResultView({ items, photoDataUrl, onRestart, onBackToEdit }: Res
           return (
             <li key={i} className={ok ? 'result-row ok' : 'result-row bad'}>
               <div className="row-main">
+                <span className={ok ? 'status-dot status-dot-ok' : 'status-dot status-dot-bad'} aria-hidden="true">
+                  {ok ? '✓' : '!'}
+                </span>
                 <span className="row-index">{i + 1}</span>
                 <span className="row-text">{p.raw || '(빈 항목)'}</span>
-                <span className={ok ? 'badge badge-ok' : 'badge badge-bad'}>{ok ? '제자리' : '오배열'}</span>
               </div>
               {move && (
                 <div className="move-note">

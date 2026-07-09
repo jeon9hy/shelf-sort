@@ -79,18 +79,20 @@ export function EditList({
                     inputMode="text"
                   />
                   <div className="row-controls">
-                    <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="위로 이동">
-                      ▲
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => move(i, 1)}
-                      disabled={i === items.length - 1}
-                      aria-label="아래로 이동"
-                    >
-                      ▼
-                    </button>
-                    <button type="button" onClick={() => removeAt(i)} aria-label="삭제">
+                    <div className="reorder-stepper">
+                      <button type="button" onClick={() => move(i, -1)} disabled={i === 0} aria-label="위로 이동">
+                        ▲
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => move(i, 1)}
+                        disabled={i === items.length - 1}
+                        aria-label="아래로 이동"
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <button type="button" className="delete-button" onClick={() => removeAt(i)} aria-label="삭제">
                       ✕
                     </button>
                   </div>

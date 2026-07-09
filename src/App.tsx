@@ -4,6 +4,7 @@ import { CaptureView } from './components/CaptureView'
 import { EditList } from './components/EditList'
 import { ResultView } from './components/ResultView'
 import { Settings } from './components/Settings'
+import { StepIndicator } from './components/StepIndicator'
 import { RemoteOcrProvider } from './ocr/remoteOcrProvider'
 import { isOcrEnabled } from './ocr/settings'
 
@@ -61,6 +62,7 @@ function App() {
           ⚙
         </button>
       </header>
+      <StepIndicator step={step} />
       <main className="app-main">
         {step === 'capture' && <CaptureView onCapture={handleCapture} />}
         {step === 'edit' && photoDataUrl && (

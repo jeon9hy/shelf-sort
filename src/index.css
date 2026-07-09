@@ -61,12 +61,46 @@ body {
   margin: 0;
   background: var(--bg-gradient);
   min-height: 100svh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 은은한 배경 블롭 — 화면을 가리지 않도록 뷰포트에 고정하고 흐릿하게 처리 */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+}
+
+body::before {
+  width: 60vw;
+  height: 60vw;
+  max-width: 420px;
+  max-height: 420px;
+  top: -12vw;
+  right: -18vw;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-2) 55%, transparent), transparent 70%);
+}
+
+body::after {
+  width: 70vw;
+  height: 70vw;
+  max-width: 480px;
+  max-height: 480px;
+  bottom: -20vw;
+  left: -22vw;
+  background: radial-gradient(circle, color-mix(in srgb, #ec8fd0 45%, transparent), transparent 70%);
 }
 
 #root {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 h1,
