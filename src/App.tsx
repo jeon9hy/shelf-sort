@@ -4,7 +4,7 @@ import { CaptureView } from './components/CaptureView'
 import { EditList } from './components/EditList'
 import { ResultView } from './components/ResultView'
 import { Settings } from './components/Settings'
-import { TesseractOcrProvider } from './ocr/tesseractProvider'
+import { ClovaOcrProvider } from './ocr/clovaOcrProvider'
 import { isOcrEnabled } from './ocr/settings'
 
 type Step = 'capture' | 'edit' | 'result'
@@ -26,7 +26,7 @@ function App() {
     if (!isOcrEnabled()) return
 
     setOcrLoading(true)
-    const provider = new TesseractOcrProvider()
+    const provider = new ClovaOcrProvider()
     provider
       .recognize(dataUrl)
       .then((result) => {
