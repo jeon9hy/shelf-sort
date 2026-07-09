@@ -1,10 +1,11 @@
-import { clusterIntoLabels, type TextBox } from './clusterLines'
 import { OcrError, type OcrProvider, type OcrResult } from './types'
 
-// 옵션 (A) 변형: Google Cloud Vision OCR. API 키를 브라우저에 노출하지 않기 위해
-// 이 프론트는 이미지를 우리 서버(Vercel Serverless Function, /api/recognize)로만
-// 보내고, 그 함수가 GOOGLE_VISION_API_KEY 환경변수로 실제 Vision API를 대신
-// 호출한다. 프론트는 어떤 OCR 엔진을 쓰는지 모른다 — 그냥 자체 API를 부른다.
+// 옵션 (A): 비전 모델(Gemini) API. API 키를 브라우저에 노출하지 않기 위해 이 프론트는
+// 이미지를 우리 서버(Vercel Serverless Function, /api/recognize)로만 보내고, 그
+// 함수가 GEMINI_API_KEY 환경변수로 실제 Gemini API를 대신 호출한다. 프론트는 어떤
+// 비전 모델을 쓰는지 모른다 — 그냥 자체 API를 부르고, 이미 왼→오른쪽 순서로 정렬된
+// 청구기호 문자열 배열을 그대로 돌려받는다(라벨 클러스터링/보정은 서버가 모델
+// 프롬프트로 처리한다).
 
 const MAX_DIMENSION = 2000
 const JPEG_QUALITY = 0.85
@@ -31,15 +32,14 @@ async function resizeDataUrl(dataUrl: string): Promise<string> {
   return canvas.toDataURL('image/jpeg', JPEG_QUALITY)
 }
 
-function splitDataUrl(dataUrl: string): { format: string; base64: string } {
-  const match = dataUrl.match(/^data:image\/(\w+);base64,(.*)$/s)
+function splitDataUrl(dataUrl: string): { mimeType: string; base64: string } {
+  const match = dataUrl.match(/^data:(image\/\w+);base64,(.*)$/s)
   if (!match) throw new OcrError('이미지 데이터 형식을 읽을 수 없습니다.')
-  const format = match[1] === 'jpeg' ? 'jpg' : match[1]
-  return { format, base64: match[2] }
+  return { mimeType: match[1], base64: match[2] }
 }
 
 interface RecognizeApiResponse {
-  boxes: TextBox[]
+  items: string[]
 }
 
 interface RecognizeApiError {
@@ -50,14 +50,14 @@ interface RecognizeApiError {
 export class RemoteOcrProvider implements OcrProvider {
   async recognize(imageDataUrl: string): Promise<OcrResult> {
     const resized = await resizeDataUrl(imageDataUrl)
-    const { format, base64 } = splitDataUrl(resized)
+    const { mimeType, base64 } = splitDataUrl(resized)
 
     let response: Response
     try {
       response = await fetch('/api/recognize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64, format }),
+        body: JSON.stringify({ image: base64, mimeType }),
       })
     } catch {
       throw new OcrError('인식 서버에 연결할 수 없습니다.')
@@ -72,6 +72,6 @@ export class RemoteOcrProvider implements OcrProvider {
     }
 
     const data = (await response.json()) as RecognizeApiResponse
-    return { texts: clusterIntoLabels(data.boxes) }
+    return { texts: data.items }
   }
 }
