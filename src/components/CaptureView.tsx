@@ -8,7 +8,8 @@ interface CaptureViewProps {
 /**
  * 1) 카메라로 서가 사진 촬영(getUserMedia) + 2) 가이드 프레임 오버레이.
  * getUserMedia를 쓸 수 없는 환경(권한 거부, 미지원 브라우저)을 위해
- * <input type="file" capture="environment">로 촬영/갤러리 첨부 fallback도 항상 제공한다.
+ * <input type="file" accept="image/*">로 갤러리 첨부 fallback도 항상 제공한다
+ * (capture 속성을 넣지 않아야 모바일에서 카메라가 아닌 사진 보관함이 열린다).
  */
 export function CaptureView({ onCapture }: CaptureViewProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -94,14 +95,8 @@ export function CaptureView({ onCapture }: CaptureViewProps) {
           촬영
         </button>
         <label className="secondary-button file-label">
-          갤러리에서 선택 / 촬영
-          <input
-            type="file"
-            accept="image/*"
-            capture="environment"
-            onChange={onFilePicked}
-            hidden
-          />
+          갤러리에서 선택
+          <input type="file" accept="image/*" onChange={onFilePicked} hidden />
         </label>
       </div>
     </div>
