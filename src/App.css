@@ -11,38 +11,41 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px;
-  background: var(--accent);
+  padding: 16px 18px;
+  background: var(--bg);
+  border-bottom: 1.5px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 5;
 }
 
 .app-header h1 {
-  font-size: 19px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
   margin: 0;
-  color: #ffffff;
-  letter-spacing: 0.02em;
+  color: var(--text-h);
+  letter-spacing: 0.06em;
 }
 
 .icon-button {
-  border: none;
-  background: rgba(255, 255, 255, 0.18);
-  color: #ffffff;
-  border-radius: 999px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-h);
+  border-radius: var(--radius-sm);
   width: 38px;
   height: 38px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
+  transition: transform 0.12s ease, background 0.15s ease;
 }
 
 .icon-button:hover {
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--surface-alt);
 }
 
 .icon-button:active {
-  transform: scale(0.92);
+  transform: scale(0.94);
 }
 
 /* Step indicator */
@@ -51,9 +54,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 14px 16px 0;
-  background: var(--accent);
+  gap: 6px;
+  padding: 12px 16px 0;
+  background: var(--bg);
+  font-family: var(--font-mono);
 }
 
 .step-dot {
@@ -63,28 +67,29 @@
   height: 26px;
   min-width: 26px;
   padding: 0 6px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  transition: min-width 0.25s ease, padding 0.25s ease, background 0.25s ease, color 0.25s ease;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  color: var(--text-h);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  transition: min-width 0.25s ease, padding 0.25s ease, background 0.2s ease, color 0.2s ease;
 }
 
 .step-dot-upcoming {
-  background: rgba(255, 255, 255, 0.16);
-  color: rgba(255, 255, 255, 0.75);
+  opacity: 0.4;
 }
 
 .step-dot-done {
-  background: rgba(255, 255, 255, 0.28);
-  color: #ffffff;
+  background: var(--surface-alt);
 }
 
 .step-dot-active {
-  min-width: 60px;
-  padding: 0 14px;
-  background: #ffffff;
-  color: var(--accent);
-  font-size: 12px;
+  min-width: 58px;
+  padding: 0 12px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  text-transform: uppercase;
 }
 
 .app-main {
@@ -100,36 +105,35 @@
 .primary-button,
 .secondary-button {
   border-radius: var(--radius-sm);
-  padding: 13px 18px;
-  font-size: 15px;
+  padding: 14px 18px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   font-weight: 700;
-  border: 1px solid transparent;
+  letter-spacing: 0.03em;
+  border: 1.5px solid var(--border);
   cursor: pointer;
   flex: 1;
   text-align: center;
-  transition: transform 0.12s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  transition: transform 0.1s ease, opacity 0.15s ease;
 }
 
 .primary-button {
   background: var(--accent);
   color: var(--accent-contrast);
-  box-shadow: 0 10px 22px -8px hsl(var(--shadow-color) / 0.55);
 }
 
 .primary-button:active {
-  transform: translateY(1px) scale(0.98);
+  transform: scale(0.98);
 }
 
 .primary-button:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
 .secondary-button {
   background: var(--surface);
-  color: var(--accent);
-  border-color: var(--border);
+  color: var(--text-h);
 }
 
 .secondary-button:active {
@@ -142,22 +146,31 @@
   justify-content: center;
 }
 
-/* 편집/결과 화면 하단에 고정되는 액션바 (엄지로 바로 누르기 좋은 위치) */
+/* 편집/결과 화면 하단에 고정되는 액션바. 레퍼런스 사이트의 하단 스플릿 바처럼
+   버튼 두 개가 여백 없이 붙어 하나의 바를 이룬다. */
 .capture-actions {
   display: flex;
-  gap: 10px;
+  gap: 0;
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   margin: 0 auto;
   max-width: 640px;
-  padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border);
+  background: var(--surface);
+  border-top: 1.5px solid var(--border);
   z-index: 8;
+}
+
+.capture-actions .primary-button,
+.capture-actions .secondary-button {
+  border-radius: 0;
+  border: none;
+  padding: 18px 16px calc(18px + env(safe-area-inset-bottom));
+}
+
+.capture-actions .secondary-button {
+  border-right: 1.5px solid var(--border);
 }
 
 /* Capture view */
@@ -173,10 +186,10 @@
   width: 75%;
   margin: 0 auto;
   min-height: 180px;
-  background: #14161d;
+  background: #0d0c09;
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: 0 18px 40px -16px hsl(var(--shadow-color) / 0.5);
 }
 
 /* 카메라가 실제로 찍는 비율 그대로 보여준다 — 크롭 없이 원본 화각 그대로 */
@@ -192,7 +205,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f3f4f6;
+  color: var(--bg);
   padding: 24px;
   text-align: center;
   font-size: 14px;
@@ -213,14 +226,14 @@
   align-items: center;
   justify-content: center;
   padding: 20px 26px calc(20px + env(safe-area-inset-bottom));
-  background: linear-gradient(180deg, transparent 0%, rgba(8, 9, 15, 0.55) 75%);
+  background: linear-gradient(180deg, transparent 0%, rgba(8, 7, 4, 0.6) 75%);
 }
 
 .shutter-button {
   width: 70px;
   height: 70px;
   border-radius: 50%;
-  border: 3.5px solid #ffffff;
+  border: 3.5px solid var(--bg);
   background: transparent;
   padding: 4px;
   cursor: pointer;
@@ -241,10 +254,10 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--bg);
 }
 
-/* 갤러리 첨부는 카메라 화면 아래, 독립된 버튼으로 */
+/* 갤러리 첨부는 카메라 화면 아래, 독립된 링크 바 스타일 버튼으로 */
 .gallery-row {
   display: flex;
 }
@@ -253,15 +266,16 @@
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
   border-radius: var(--radius-sm);
-  padding: 13px 18px;
-  font-size: 15px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   font-weight: 700;
+  letter-spacing: 0.03em;
   background: var(--surface);
-  color: var(--accent);
-  border: 1px solid var(--border);
+  color: var(--text-h);
+  border: 1.5px solid var(--border);
   cursor: pointer;
   transition: transform 0.12s ease;
 }
@@ -271,7 +285,12 @@
 }
 
 .gallery-button-icon {
-  font-size: 16px;
+  font-size: 15px;
+}
+
+.gallery-button::after {
+  content: '→';
+  margin-left: auto;
 }
 
 /* Guide overlay */
@@ -294,7 +313,7 @@
   position: absolute;
   width: 26px;
   height: 26px;
-  border-color: #ffffffed;
+  border-color: var(--bg);
 }
 
 .corner-tl {
@@ -302,7 +321,6 @@
   left: -2px;
   border-top: 3px solid;
   border-left: 3px solid;
-  border-radius: 8px 0 0 0;
 }
 
 .corner-tr {
@@ -310,7 +328,6 @@
   right: -2px;
   border-top: 3px solid;
   border-right: 3px solid;
-  border-radius: 0 8px 0 0;
 }
 
 .corner-bl {
@@ -318,7 +335,6 @@
   left: -2px;
   border-bottom: 3px solid;
   border-left: 3px solid;
-  border-radius: 0 0 0 8px;
 }
 
 .corner-br {
@@ -326,7 +342,6 @@
   right: -2px;
   border-bottom: 3px solid;
   border-right: 3px solid;
-  border-radius: 0 0 8px 0;
 }
 
 .guide-line {
@@ -334,7 +349,7 @@
   left: -4%;
   right: -4%;
   height: 0;
-  border-top: 1.5px dashed #ffffff80;
+  border-top: 1.5px dashed color-mix(in srgb, var(--bg) 65%, transparent);
 }
 
 .guide-line-main {
@@ -348,7 +363,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding-bottom: 84px; /* 하단 고정 액션바에 가리지 않도록 */
+  padding-bottom: 76px; /* 하단 고정 액션바에 가리지 않도록 */
 }
 
 /* 촬영/첨부한 사진을 원본 비율 그대로, 카메라 화면과 같은 75% 크기로 보여준다.
@@ -359,22 +374,23 @@
   height: auto;
   margin: 0 auto;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
-  box-shadow: 0 12px 28px -14px hsl(var(--shadow-color) / 0.45);
+  border: 1.5px solid var(--border);
 }
 
 .status-line {
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-  background: var(--accent-soft);
-  border: 1px solid transparent;
-  color: var(--accent);
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border-soft);
+  color: var(--text-h);
 }
 
 .status-error {
   color: var(--danger);
   background: var(--danger-bg);
+  border-color: var(--danger);
 }
 
 .edit-hint,
@@ -395,16 +411,15 @@
 
 .edit-row {
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border-soft);
   border-radius: var(--radius-md);
   padding: 12px;
-  box-shadow: 0 6px 16px -12px hsl(var(--shadow-color) / 0.4);
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease;
 }
 
 .edit-row.issue {
   border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger-bg) 45%, var(--surface));
+  background: var(--danger-bg);
 }
 
 .row-main {
@@ -415,16 +430,17 @@
 
 .row-index {
   flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--accent-soft);
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-h);
 }
 
 .row-input {
@@ -432,17 +448,18 @@
   min-width: 0;
   padding: 10px 12px;
   border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--border-soft);
   background: var(--bg);
   color: var(--text-h);
-  font-size: 15px;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  transition: border-color 0.15s ease;
 }
 
 .row-input:focus {
-  outline: none;
-  border-color: var(--accent-2);
-  box-shadow: 0 0 0 4px var(--accent-soft);
+  outline: 1.5px solid var(--border);
+  outline-offset: -1.5px;
+  border-color: var(--border);
 }
 
 .row-controls {
@@ -456,8 +473,8 @@
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-soft);
   overflow: hidden;
-  background: var(--accent-soft);
 }
 
 .reorder-stepper button {
@@ -465,14 +482,14 @@
   height: 20px;
   border: none;
   background: transparent;
-  color: var(--accent);
+  color: var(--text-h);
   font-size: 9px;
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .reorder-stepper button:active {
-  background: var(--border);
+  background: var(--surface-alt);
 }
 
 .reorder-stepper button:disabled {
@@ -481,11 +498,11 @@
 }
 
 .delete-button {
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  border: none;
-  background: var(--danger-bg);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--danger);
+  background: transparent;
   color: var(--danger);
   cursor: pointer;
   transition: transform 0.12s ease;
@@ -502,7 +519,14 @@
 }
 
 .add-row-button {
-  align-self: flex-start;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.add-row-button::after {
+  content: '→';
+  margin-left: auto;
 }
 
 /* Result view */
@@ -511,10 +535,9 @@
   display: flex;
   align-items: stretch;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 18px 8px;
-  box-shadow: 0 12px 28px -16px hsl(var(--shadow-color) / 0.45);
 }
 
 .stat-block {
@@ -527,9 +550,9 @@
 }
 
 .stat-value {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
   color: var(--text-h);
 }
 
@@ -542,24 +565,25 @@
 }
 
 .stat-label {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   color: var(--text);
+  letter-spacing: 0.02em;
 }
 
 .stat-divider {
-  width: 1px;
-  background: var(--border);
+  width: 1.5px;
+  background: var(--border-soft);
   margin: 2px 0;
 }
 
 .result-row {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--border);
+  border: 1.5px solid var(--border-soft);
+  border-left: 4px solid var(--border-soft);
   border-radius: var(--radius-md);
   padding: 12px;
-  box-shadow: 0 6px 16px -12px hsl(var(--shadow-color) / 0.4);
 }
 
 .result-row.ok {
@@ -574,7 +598,8 @@
   flex: 0 0 auto;
   width: 22px;
   height: 22px;
-  border-radius: 50%;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid currentColor;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -583,18 +608,17 @@
 }
 
 .status-dot-ok {
-  background: var(--ok-bg);
   color: var(--ok);
 }
 
 .status-dot-bad {
-  background: var(--danger-bg);
   color: var(--danger);
 }
 
 .row-text {
   flex: 1;
-  font-size: 15px;
+  font-family: var(--font-mono);
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-h);
   word-break: break-word;
@@ -612,8 +636,7 @@
 .settings-overlay {
   position: fixed;
   inset: 0;
-  background: color-mix(in srgb, #0c0d14 60%, transparent);
-  backdrop-filter: blur(2px);
+  background: color-mix(in srgb, var(--text-h) 55%, transparent);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -625,17 +648,19 @@
   color: var(--text);
   width: 100%;
   max-width: 640px;
-  border-radius: 26px 26px 0 0;
+  border-top: 1.5px solid var(--border);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 -20px 50px -20px hsl(var(--shadow-color) / 0.6);
 }
 
 .settings-panel h2 {
   margin: 0;
-  font-size: 19px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.03em;
 }
 
 .settings-toggle {
@@ -646,30 +671,12 @@
   accent-color: var(--accent);
 }
 
-.settings-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-h);
-}
-
-.settings-field input {
-  font-weight: 400;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border);
-  background: var(--bg);
-  color: var(--text-h);
-  font-size: 15px;
-}
-
 .settings-warning {
   font-size: 12px;
   color: var(--text);
   line-height: 1.6;
   background: var(--surface-alt);
+  border: 1.5px solid var(--border-soft);
   padding: 12px 14px;
   border-radius: var(--radius-sm);
 }

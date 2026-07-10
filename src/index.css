@@ -1,27 +1,27 @@
 :root {
-  --text: #6b7080;
-  --text-h: #171923;
-  --bg: #f5f6fa;
-  --surface: #ffffff;
-  --surface-alt: #eef0f8;
-  --border: #e3e5ee;
-  --accent: #4a55c9;
-  --accent-2: #6169d6;
-  --accent-soft: #eaebf9;
-  --accent-contrast: #ffffff;
-  --danger: #e0455f;
-  --danger-bg: #fbe7ea;
-  --ok: #1d9d6c;
-  --ok-bg: #e2f6ed;
-  --shadow-color: 233 45% 45%;
+  --text: #5c574a;
+  --text-h: #16140e;
+  --bg: #f4efe0;
+  --surface: #fffdf7;
+  --surface-alt: #eae5d4;
+  --border: #16140e;
+  --border-soft: #d9d2bb;
+  --accent: #16140e;
+  --accent-contrast: #f4efe0;
+  --danger: #a6432d;
+  --danger-bg: #f2ddd2;
+  --ok: #4c6b4a;
 
-  --radius-lg: 22px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
+  --radius-lg: 6px;
+  --radius-md: 4px;
+  --radius-sm: 3px;
 
-  font:
-    16px/1.55 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
-    system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+    'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', 'Roboto Mono', 'JetBrains Mono', Consolas,
+    monospace;
+
+  font: 16px/1.55 var(--font-sans);
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
@@ -33,21 +33,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #a3a7ba;
-    --text-h: #f2f3f8;
-    --bg: #101119;
-    --surface: #191b26;
-    --surface-alt: #20222f;
-    --border: #2c2e3d;
-    --accent: #6169d6;
-    --accent-2: #7b83e0;
-    --accent-soft: #262a49;
-    --accent-contrast: #ffffff;
-    --danger: #f0768a;
-    --danger-bg: #34212a;
-    --ok: #4cc793;
-    --ok-bg: #163629;
-    --shadow-color: 233 60% 3%;
+    --text: #b8b2a0;
+    --text-h: #f5f1e4;
+    --bg: #17150f;
+    --surface: #201d15;
+    --surface-alt: #29251b;
+    --border: #ece6d4;
+    --border-soft: #3a3527;
+    --accent: #ece6d4;
+    --accent-contrast: #17150f;
+    --danger: #dd8266;
+    --danger-bg: #3a241b;
+    --ok: #8fb98c;
   }
 }
 

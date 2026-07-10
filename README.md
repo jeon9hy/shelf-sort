@@ -1,4 +1,4 @@
-# shelf-sort — 서가 오배열 정리
+# SHELFY — 서가 오배열 정리
 
 도서관 서가의 청구기호 오배열을 스마트폰으로 찾아주는 모바일 웹앱. 서가를 촬영하면
 왼쪽→오른쪽 순서로 청구기호를 인식하고, 올바른 정렬 순서와 비교해 오배열된 책과
@@ -56,7 +56,7 @@ npm run dev       # http://localhost:5173
 ### 테스트 / 빌드 / 린트
 
 ```bash
-npx vitest run   # 도메인 로직 유닛 테스트
+npm test         # 도메인 로직 유닛 테스트
 npm run build    # 타입체크 + 프로덕션 빌드
 npm run lint     # oxlint
 ```
