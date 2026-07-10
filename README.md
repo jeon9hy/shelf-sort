@@ -31,17 +31,23 @@
 ## 아키텍처
 
 - **`src/domain/`** — 파싱(`parse.ts`), 한글 자모 비교(`hangul.ts`), 정렬 비교자(`compare.ts`),
-  오배열 판정(`misplacement.ts`, LIS 기반). 전부 순수 함수이며 유닛 테스트(`*.test.ts`)로
-  검증되어 있다.
-- **`src/components/`** — 촬영(`CaptureView`, `GuideOverlay`), 편집(`EditList`), 결과
-  (`ResultView`), 설정(`Settings`) 화면.
+  오배열 판정(`misplacement.ts`, LIS 기반), 공유 타입(`types.ts`). 전부 순수 함수이며 유닛
+  테스트(`*.test.ts`)로 검증되어 있다.
+- **`src/components/`** — 촬영(`CaptureView`, `GuideOverlay`), 진행 단계 표시
+  (`StepIndicator`), 편집(`EditList`), 결과(`ResultView`), 설정(`Settings`) 화면.
 - **`src/ocr/`** — 인식 클라이언트(`remoteOcrProvider.ts`)는 이미지를 축소한 뒤 자체 API
   (`/api/recognize`)로 보내기만 하고, 어떤 비전 모델을 쓰는지는 모른다.
 - **`api/recognize.js`** — Vercel 서버리스 함수. Gemini Flash 비전 모델에 이미지+프롬프트를
   보내 "청구기호 라벨만 왼→오른 순서로 읽어 JSON 배열로" 추출한다(책 제목·저자명·바코드는
   프롬프트로 걸러냄). API 키는 서버에만 있고 브라우저로 노출되지 않는다. Upstash Redis가
   연결되어 있으면 일일 사용량을 세어 무료 한도 근처에서 자동으로 인식을 중단하고 수동 입력을
-  안내한다.
+  안내한다. 한도 초과·오류 시에도 원본 에러 대신 사용자에게 이해되는 한국어 메시지를 보여준다.
+
+## 디자인
+
+크림색 배경 + 블랙 보더 위주의 플랫한 에디토리얼 스타일(그림자 대신 얇은 보더, 라운드
+그라디언트 버튼 대신 화살표 달린 바 형태 버튼). 버튼·라벨·청구기호 표시에는 모노스페이스,
+본문에는 Pretendard를 쓴다.
 
 ## 개발 시작하기
 
