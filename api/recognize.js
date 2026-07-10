@@ -143,7 +143,21 @@ export default async function handler(req, res) {
 
   if (!geminiResponse.ok) {
     const text = await geminiResponse.text().catch(() => '')
-    res.status(502).json({ error: `Gemini 오류 (${geminiResponse.status}): ${text.slice(0, 300)}` })
+    // 원본 오류는 서버 로그에만 남기고(개발자 디버깅용), 사용자에게는 상황에 맞는
+    // 안내만 짧게 보여준다 — Gemini의 원문 JSON 에러 메시지를 그대로 노출하지 않는다.
+    console.error(`Gemini API error (${geminiResponse.status}):`, text.slice(0, 1000))
+
+    if (geminiResponse.status === 429) {
+      res.status(429).json({
+        error: 'Gemini 사용량 한도에 도달했습니다. 잠시 후 다시 시도하거나 청구기호를 직접 입력해 주세요.',
+        quotaExceeded: true,
+      })
+      return
+    }
+
+    res.status(502).json({
+      error: `인식 서버에 일시적인 문제가 발생했습니다 (${geminiResponse.status}). 잠시 후 다시 시도하거나 직접 입력해 주세요.`,
+    })
     return
   }
 
