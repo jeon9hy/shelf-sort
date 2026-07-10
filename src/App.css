@@ -170,8 +170,9 @@
 
 .camera-frame {
   position: relative;
-  width: 100%;
-  min-height: 240px;
+  width: 75%;
+  margin: 0 auto;
+  min-height: 180px;
   background: #14161d;
   border-radius: var(--radius-lg);
   overflow: hidden;
@@ -187,7 +188,7 @@
 
 .camera-fallback {
   width: 100%;
-  min-height: 240px;
+  min-height: 180px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,12 +351,13 @@
   padding-bottom: 84px; /* 하단 고정 액션바에 가리지 않도록 */
 }
 
-/* 촬영/첨부한 사진을 원본 비율 그대로 보여준다 — 크롭도, 강제 높이도 없음.
-   가로 폭에 맞춰 자연스러운 높이로 스케일되므로 카메라 화면에서 본 비율과 동일하다. */
+/* 촬영/첨부한 사진을 원본 비율 그대로, 카메라 화면과 같은 75% 크기로 보여준다.
+   크롭도 강제 높이도 없이 폭에 맞춰 자연스러운 높이로 스케일된다. */
 .edit-thumb {
   display: block;
-  width: 100%;
+  width: 75%;
   height: auto;
+  margin: 0 auto;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   box-shadow: 0 12px 28px -14px hsl(var(--shadow-color) / 0.45);
